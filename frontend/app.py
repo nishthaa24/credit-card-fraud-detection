@@ -1,18 +1,12 @@
 import streamlit as st
 import json
 import requests as re
+import os
+os.environ['CURL_CA_BUNDLE'] = ''
 
 st.title("Credit Card Fraud Detection Web App")
 
 st.image("image.png")
-
-st.write("""
-## About
-Credit card fraud is a form of identity theft that involves an unauthorized taking of another's credit card information for the purpose of charging purchases to the account or removing funds from it.
-**This Streamlit App utilizes a Machine Learning model served as an API in order to detect fraudulent credit card transactions based on the following criteria: hours, type of transaction, amount, balance before and after transaction etc.** 
-The API was built with FastAPI and can be found [here.](https://credit-fraud-ml-api.herokuapp.com/)
-The notebook, model and documentation(Dockerfiles, FastAPI script, Streamlit App script) are available on [GitHub.](https://github.com/Nneji123/Credit-Card-Fraud-Detection)        
-""")
 
 
 st.sidebar.header('Input Features of The Transaction')
@@ -45,11 +39,7 @@ oldbalanceorg = st.sidebar.number_input("""Original Balance Before Transaction w
 newbalanceorg= st.sidebar.number_input("""New Balance After Transaction was made""",min_value=0, max_value=110000)
 oldbalancedest= st.sidebar.number_input("""Old Balance""",min_value=0, max_value=110000)
 newbalancedest= st.sidebar.number_input("""New Balance""",min_value=0, max_value=110000)
-isflaggedfraud = 0
-if amount >= 200000:
-  isflaggedfraud = 1
-else:
-  isflaggedfraud = 0
+isflaggedfraud = st.sidebar.selectbox("""Specify if this was flagged as Fraud by your System: """,(0,1))
 
 
 if st.button("Detection Result"):
@@ -70,15 +60,15 @@ if st.button("Detection Result"):
     Receiver ID: {receiver_name}
     1. Number of Hours it took to complete: {step}\n
     2. Type of Transaction: {x}\n
-    3. Anount Sent: {amount}\n
-    4. Previous Balance Before Transaction: {oldbalanceorg}\n
-    5. New Balance After Transaction: {newbalanceorg}\n
-    6. Old Balance Destination Recepient Balance: {oldbalancedest}\n
-    7. New Balance Destination Recepient Balance: {newbalancedest}\n
+    3. Amount Sent: {amount}\n
+    4. Sender Previous Balance Before Transaction: {oldbalanceorg}\n
+    5. Sender New Balance After Transaction: {newbalanceorg}\n
+    6. Recepient Balance Before Transaction: {oldbalancedest}\n
+    7. Recepient Balance After Transaction: {newbalancedest}\n
     8. System Flag Fraud Status: {isflaggedfraud}
                 """)
 
-    res = re.post(f"https://backend.docker:8000/predict",json=values)
+    res = re.post(f"http://backend.docker:8000/predict/",json=values)
     json_str = json.dumps(res.json())
     resp = json.loads(json_str)
     
@@ -86,3 +76,12 @@ if st.button("Detection Result"):
         st.write("Error! Please input Transaction ID or Names of Sender and Receiver!")
     else:
         st.write(f"""### The '{x}' transaction that took place between {sender_name} and {receiver_name} is {resp[0]}.""")
+
+
+
+
+
+
+
+
+
