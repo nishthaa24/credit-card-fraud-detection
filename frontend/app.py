@@ -4,10 +4,29 @@ import requests as re
 import os
 os.environ['CURL_CA_BUNDLE'] = ''
 
-st.title("Credit Card Fraud Detection Web App")
+st.set_page_config(
+    page_title="FraudTrackr",
+    layout="wide"
+)
 
-st.image("image.png")
+st.image("logo.png", width=110)
 
+st.title('FraudTrackr - Unmasking Fraud, Protecting Trust!')
+
+st.divider()
+
+col1, col2 = st.columns(2)
+
+with col1: 
+    st.markdown('')
+    st.markdown('')
+    st.markdown('')
+    st.markdown('')
+    st.markdown('')
+    st.markdown('**:red[FraudTrackr]** is a cutting-edge web application designed to safeguard businesses and individuals from the ever-present threat of credit card fraud. Leveraging state-of-the-art technologies and intelligent algorithms, **:red[FraudTrackr]** provides an efficient and comprehensive solution to detect and prevent fraudulent activities, ensuring the security of your transactions and protecting financial well-being of your customers.')
+
+with col2:
+    st.image("imag1.png")
 
 st.sidebar.header('Input Features of The Transaction')
 
@@ -39,8 +58,7 @@ oldbalanceorg = st.sidebar.number_input("""Original Balance Before Transaction w
 newbalanceorg= st.sidebar.number_input("""New Balance After Transaction was made""",min_value=0, max_value=110000)
 oldbalancedest= st.sidebar.number_input("""Old Balance""",min_value=0, max_value=110000)
 newbalancedest= st.sidebar.number_input("""New Balance""",min_value=0, max_value=110000)
-isflaggedfraud = st.sidebar.selectbox("""Specify if this was flagged as Fraud by your System: """,(0,1))
-
+isflaggedfraud = st.sidebar.radio("Specify if this was flagged as Fraud by your System: ",(0,1))
 
 if st.button("Detection Result"):
     values = {
@@ -57,7 +75,7 @@ if st.button("Detection Result"):
 
     st.write(f"""### These are the transaction details:\n
     Sender ID: {sender_name}
-    Receiver ID: {receiver_name}
+    Receiver ID: {receiver_name}\n
     1. Number of Hours it took to complete: {step}\n
     2. Type of Transaction: {x}\n
     3. Amount Sent: {amount}\n
@@ -65,7 +83,7 @@ if st.button("Detection Result"):
     5. Sender New Balance After Transaction: {newbalanceorg}\n
     6. Recepient Balance Before Transaction: {oldbalancedest}\n
     7. Recepient Balance After Transaction: {newbalancedest}\n
-    8. System Flag Fraud Status: {isflaggedfraud}
+    8. System Flag Fraud Status: {isflaggedfraud}\n
                 """)
 
     res = re.post(f"http://backend.docker:8000/predict/",json=values)
@@ -73,15 +91,6 @@ if st.button("Detection Result"):
     resp = json.loads(json_str)
     
     if sender_name=='' or receiver_name == '':
-        st.write("Error! Please input Transaction ID or Names of Sender and Receiver!")
+        st.write(f"""###\nError! Please input Transaction ID or Names of Sender and Receiver!""")
     else:
-        st.write(f"""### The '{x}' transaction that took place between {sender_name} and {receiver_name} is {resp[0]}.""")
-
-
-
-
-
-
-
-
-
+        st.write(f"""###\n The '{x}' transaction that took place between {sender_name} and {receiver_name} is {resp[0]}.""")
